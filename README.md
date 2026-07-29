@@ -39,7 +39,7 @@ Dynamically resolves four NT functions from `ntdll.dll` at runtime using `GetPro
 - `NtProtectVirtualMemory` — change memory protection
 - `NtAllocateVirtualMemory` — allocate memory in remote process
 
-**Why:** Avoids static IAT entries for these functions, reducing signature surface for static scanners. Does **not** bypass userland hooks on its own — for that you'd need direct syscalls or NTDLL unhooking.
+**Why:** Avoids static IAT entries for these functions, reducing signature surface for static scanners. Does **not** bypass userland hooks on its own for that you'd need direct syscalls or NTDLL unhooking.
 
 ---
 
@@ -69,13 +69,13 @@ Key flags:
 Fetches raw shellcode bytes from the C2 over HTTP using WinHTTP.
 
 Details:
-- Randomized jitter sleep (2–6 seconds) before the request — basic sandbox evasion against short-timeout dynamic analysis
+- Randomized jitter sleep (2–6 seconds) before the request basic sandbox evasion against short-timeout dynamic analysis
 - Spoofed `User-Agent` mimicking Chrome on Windows 10
 - Adds plausible browser headers (`Accept`, `Accept-Language`, `Cache-Control`)
 - Reads response in 4096-byte chunks into a heap buffer
 - Returns pointer to shellcode buffer and its length via `outLen`
 
-**No TLS by default** — the `WinHttpOpenRequest` call uses no `WINHTTP_FLAG_SECURE`. For operational use, switch `C2_PORT` to 443 and add that flag.
+**No TLS by default** the `WinHttpOpenRequest` call uses no `WINHTTP_FLAG_SECURE`. For operational use, switch `C2_PORT` to 443 and add that flag.
 
 ---
 
@@ -92,7 +92,7 @@ Steps:
 4. Write PE headers into remote allocation
 5. Iterate section headers and write each section to its correct `VirtualAddress`
 
-**Note:** Relocations and imports are **not** processed in this implementation. The mapped image is essentially a raw PE in memory — sufficient for stomping purposes since the shellcode replaces the `.text` section content entirely.
+**Note:** Relocations and imports are **not** processed in this implementation. The mapped image is essentially a raw PE in memory sufficient for stomping purposes since the shellcode replaces the `.text` section content entirely.
 
 ---
 
@@ -107,7 +107,7 @@ Steps:
 4. Write shellcode bytes over `.text` via `NtWriteVirtualMemory`
 5. Restore protection to `PAGE_EXECUTE_READ`
 
-**Evasion rationale:** The shellcode now lives inside a memory region that looks like a legitimate DLL's `.text` section — backed by a file on disk. This defeats detections that flag unbacked `EXECUTE` regions (private RWX pages). The page appears as a mapped image section rather than anonymous memory.
+**Evasion rationale:** The shellcode now lives inside a memory region that looks like a legitimate DLL's `.text` section backed by a file on disk. This defeats detections that flag unbacked `EXECUTE` regions (private RWX pages). The page appears as a mapped image section rather than anonymous memory.
 
 **Caveat:** If the shellcode is larger than the `.text` section of the chosen DLL, this will overflow into adjacent sections. Pick a DLL with a `.text` section larger than your shellcode, or add a size check.
 
@@ -117,7 +117,7 @@ Steps:
 
 Creates a remote thread starting at `startAddr` (the stomped `.text` base) using `NtCreateThreadEx` directly.
 
-The `FALSE` flag for the suspended parameter means the thread starts running immediately. The `THREAD_ALL_ACCESS` access mask is broad — for opsec you'd narrow this.
+The `FALSE` flag for the suspended parameter means the thread starts running immediately. The `THREAD_ALL_ACCESS` access mask is broad for opsec you'd narrow this.
 
 ---
 
