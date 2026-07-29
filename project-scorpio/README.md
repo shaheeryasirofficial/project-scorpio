@@ -27,5 +27,5 @@ Prints a ranked table sorted by .text size. Flags high-entropy entries with `!` 
  
 ## Notes
  
-Lower `--min-size` if nothing comes back — typical Adaptix beacon is 100-150KB so 150000 is a safe floor. If the decoy process isn't running when you execute the script the proc filter silently falls back to scanning everything.
+Lower `--min-size` if nothing comes back typical Adaptix beacon is 100-150KB so 150000 is a safe floor. If the decoy process isn't running when you execute the script the proc filter silently falls back to scanning everything.
  
