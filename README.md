@@ -7,11 +7,11 @@ A Windows process injection loader combining PPID spoofing, manual DLL mapping, 
 ## Architecture Overview
 
 ```
-FetchPayload()         — Pull shellcode from C2 over HTTP
-SpawnSpoofed()         — Spawn decoy process with spoofed PPID
-ManualMapDLL()         — Map a System32 DLL into decoy manually
-StompTextSection()     — Overwrite .text section with shellcode
-ExecuteInRemote()      — Kick off execution via NtCreateThreadEx
+FetchPayload()         Pull shellcode from C2 over HTTP
+SpawnSpoofed()         Spawn decoy process with spoofed PPID
+ManualMapDLL()         Map a System32 DLL into decoy manually
+StompTextSection()     Overwrite .text section with shellcode
+ExecuteInRemote()      Kick off execution via NtCreateThreadEx
 ```
 
 ---
@@ -34,10 +34,10 @@ ExecuteInRemote()      — Kick off execution via NtCreateThreadEx
 
 Dynamically resolves four NT functions from `ntdll.dll` at runtime using `GetProcAddress`:
 
-- `NtCreateThreadEx` — create remote threads
-- `NtWriteVirtualMemory` — write to remote process memory
-- `NtProtectVirtualMemory` — change memory protection
-- `NtAllocateVirtualMemory` — allocate memory in remote process
+- `NtCreateThreadEx` create remote threads
+- `NtWriteVirtualMemory` write to remote process memory
+- `NtProtectVirtualMemory` change memory protection
+- `NtAllocateVirtualMemory` allocate memory in remote process
 
 **Why:** Avoids static IAT entries for these functions, reducing signature surface for static scanners. Does **not** bypass userland hooks on its own for that you'd need direct syscalls or NTDLL unhooking.
 
@@ -53,14 +53,14 @@ Used internally by `SpawnSpoofed` to locate `explorer.exe` as the fake parent.
 
 ### `SpawnSpoofed(targetProc)`
 
-Spawns `targetProc` (e.g. `notepad.exe`) with `explorer.exe` as its spoofed parent process using `PROC_THREAD_ATTRIBUTE_PARENT_PROCESS`.
+Spawns `targetProc` (`notepad.exe`) with `explorer.exe` as its spoofed parent process using `PROC_THREAD_ATTRIBUTE_PARENT_PROCESS`.
 
 Key flags:
-- `CREATE_SUSPENDED` — process starts paused so injection can complete before any code runs
-- `EXTENDED_STARTUPINFO_PRESENT` — required to pass the attribute list
-- `SW_HIDE` — suppresses the window
+- `CREATE_SUSPENDED` process starts paused so injection can complete before any code runs
+- `EXTENDED_STARTUPINFO_PRESENT` required to pass the attribute list
+- `SW_HIDE` suppresses the window
 
-**Effect:** Process tree in tools like Process Hacker / Task Manager shows `explorer.exe → notepad.exe` instead of the real loader as parent.
+**Effect:** Process tree in tools like Process Hacker / Task Manager shows `explorer.exe to notepad.exe` instead of the real loader as parent.
 
 ---
 
@@ -82,7 +82,7 @@ Details:
 ### `ManualMapDLL(hProc, dllPath)`
 
 Manually maps a DLL from disk into the target process without calling `LoadLibrary`. This means:
-- No `LdrLoadDll` call → no loader lock, no `LDR_DATA_TABLE_ENTRY` in the PEB
+- No `LdrLoadDll` call no loader lock, no `LDR_DATA_TABLE_ENTRY` in the PEB
 - The DLL does **not** appear in `EnumProcessModules` or `CreateToolhelp32Snapshot(TH32CS_SNAPMODULE)`
 
 Steps:
