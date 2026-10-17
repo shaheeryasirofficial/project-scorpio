@@ -32,7 +32,7 @@ typedef NTSTATUS(NTAPI* NtProtectVirtualMemory_t)(
 typedef NTSTATUS(NTAPI* NtAllocateVirtualMemory_t)(
     HANDLE, PVOID*, ULONG_PTR, PSIZE_T, ULONG, ULONG);
 
-// Resolve NT functions dynamically — avoids IAT exposure
+// Resolve NT functions dynamically  avoids IAT exposure
 NtCreateThreadEx_t      pNtCreateThreadEx = NULL;
 NtWriteVirtualMemory_t  pNtWriteVirtualMemory = NULL;
 NtProtectVirtualMemory_t pNtProtectVirtualMemory = NULL;
