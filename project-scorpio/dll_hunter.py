@@ -85,7 +85,7 @@ def hunt(system32, min_size, proc_name, verbose):
         if proc_dlls:
             print(f"[*] {len(proc_dlls)} DLLs found in {proc_name}")
         else:
-            print(f"[!] {proc_name} not running or could not enumerate — proc filter skipped")
+            print(f"[!] {proc_name} not running or could not enumerate  proc filter skipped")
 
     dlls = list(system32.glob('*.dll'))
     print(f"[*] Scanning {len(dlls)} DLLs\n")
@@ -157,7 +157,7 @@ def main():
     results = hunt(s32, args.min_size, proc, args.verbose)
 
     if not results:
-        print("[!] nothing found — try --no-proc-filter or lower --min-size")
+        print("[!] nothing found  try --no-proc-filter or lower --min-size")
         return
 
     results.sort(key=lambda x: x['text_size'], reverse=True)
